@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 def compatibility_Coords(filepath, encoding, filename, crs):
     """
     Export the dataframe containing gauges in a compatible format with SIG softwares.
-    
+
         Parameters:
             filepath (string): Filepath containing gauges
             encoding (string): Enconding used to read the file
             filename (string): Name of the file to be exported
             crs (string): CRS of the file to be exported
-        
+
         Returns:
             gauges_geo (GeoDataFrame): File in a compatible format with SIG softwares
     """
@@ -23,6 +23,7 @@ def compatibility_Coords(filepath, encoding, filename, crs):
     LAT = []
     LON = []
 
+    # loop
     for row in gauges.itertuples(index=False, name=None):
         lat = float(row[2].replace(',', '.'))
         lon = float(row[3].replace(',', '.'))
