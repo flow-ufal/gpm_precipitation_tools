@@ -19,7 +19,6 @@ Package for downloading and analysing NASA Global Precipitation Measurement miss
 
 This tool is an adapted version of the PPTs_ tool developed by Vinicius Mesquita. It was modified from the original code by Marina Ruiz Sánchez-Oro (University of Edinburgh - School of GeoSciences) and Guillaume Goodwin (University of Edinburgh - School of GeoSciences, now in University of Padova). It offers less flexibility than the original PPTs tool and focuses on downloading rainfall data from GPM instead of offering various data sources. It contains an additional module to generate time-series of rainfall intensity in over a specified area of interest.
 
-
 * Free software: MIT license
 * Documentation (in progress): https://gpm-precipitation-tools.readthedocs.io.
 

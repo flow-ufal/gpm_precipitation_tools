@@ -1,0 +1,4 @@
+PyQt5
+numpy
+gpm_precipitation_tools
+gdal
