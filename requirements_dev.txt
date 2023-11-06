@@ -12,3 +12,5 @@ twine==3.4.2
 Sphinx==4.1.1
 pytest-runner==5.3.1
 numpy>=1.16.4
+gpm_precipitation_tools==0.4.7
+PyQt5==5.15.10
