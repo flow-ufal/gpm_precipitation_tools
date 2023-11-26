@@ -1,6 +1,6 @@
 #Importando algumas bibliotecas
 import pandas as pd
-import geopandas as gpd
+import geopandas as gpd 
 from shapely.geometry import Point
 import os
 import glob 
