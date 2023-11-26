@@ -5,7 +5,6 @@ from shapely.geometry import Point
 import os
 import glob
 
-
 def read_station(path):
 
     '''  Esta função recebe o caminho do arquivo realizar um tratamento prévio dos dados:
