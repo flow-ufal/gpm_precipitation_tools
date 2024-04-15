@@ -159,6 +159,8 @@ def read_full_stations(path, date_1='2000-06-01', date_2='2020-06-30'):
     return df_info_stations
 #==================================================================================================
 
+
+
 #==================================================================================================
 #                                        MÓDULO 02: 
 
@@ -201,7 +203,6 @@ def read_file_precipitation_grib(path, temporal_scaling="D"):
     df.set_crs(4326, allow_override=True, inplace=True) 
 
     return df
-
 
 def find_station_virtual(df, point_station):
 
@@ -250,10 +251,10 @@ def map_stations(shape_region, df_station_real, df_station_virtual, df_prec, nam
     #Região ambiental de interesse
     shape_region.plot(ax=ax, color='moccasin', edgecolor='black')
 
-    # Estação real de interesse
+    #Estação real de interesse
     df_station_real.plot(ax=ax, color='black', linewidth=5)
 
-    # Bucanso e plotando algumas estações "virtuais próximas a de interesse"
+    # Buscando e plotando algumas estações "virtuais próximas a de interesse"
     esta_proximas = df_prec[df_prec['distances'] <= 0.15]
     esta_proximas.plot(ax=ax, color='green', linewidth=5)
 
