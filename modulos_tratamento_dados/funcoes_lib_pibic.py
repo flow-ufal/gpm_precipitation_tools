@@ -15,7 +15,7 @@ import numpy as np
 
 
 #==================================================================================================
-#          MÓDULO 01: Leitura, tratamento e testes estatísticos dos dados das estações
+#                     MÓDULO 01: Pré-processamento dos dados das estações  
 #==================================================================================================
 
 def read_station(path):
@@ -157,9 +157,49 @@ def read_full_stations(path, date_1='2000-06-01', date_2='2020-06-30'):
     df_info_stations = pd.concat(list_df) 
 
     return df_info_stations
-#==================================================================================================
 
 
+
+
+
+def station_metrics(df_station):
+    ''' Recebe os dados pré-processados da estação e retorna algumas métricas  '''
+
+    #Valores acumulados anuais
+    station_acum_anual = df_station.groupby(pd.Grouper(key='Data', freq='Y'))['Precipitação (mm)'].sum()
+    
+    #Valores acumulados mensais 
+    station_acum_mensal = df_station.groupby(pd.Grouper(key='Data', freq='M'))['Precipitação (mm)'].sum()
+    
+    #Valores máximos diários a cada ano
+    station_max_dia = df_station.groupby(pd.Grouper(key='Data', freq='Y'))['Precipitação (mm)'].max()
+
+    return [station_max_dia, station_acum_anual, station_acum_anual]
+
+
+def plot_station_metrics(metrics):
+
+    ''' Visualização dos dados calculados em "station_metrics"  '''
+
+    lista_titles = ['Acumulado Anual (mm)', 'Acumulado Mensal (mm)', 'Máxima Diária (mm)']
+
+    for i in range(len(metrics)): 
+        if i == 0:
+            width_bar = 300
+        else:
+            width_bar = 250 
+
+        plt.figure()
+
+        plt.bar(metrics[i].index, metrics[i], color='darkblue', width=width_bar)
+        name_title = lista_titles[i]
+        plt.title(name_title, size=15, color='black')
+        plt.ylabel('Precipitação (mm)', size=15)
+        plt.xticks(size=12, rotation=30)
+        plt.yticks(size=12) 
+
+        plt.grid(linestyle = '-', linewidth = 0.3, color='black')
+        plt.show() 
 
 #==================================================================================================
 #                                        MÓDULO 02: 
