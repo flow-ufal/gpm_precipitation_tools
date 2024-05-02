@@ -265,10 +265,12 @@ def find_station_virtual(df, point_station):
     #Calculando distancias entre cada ponto de satélite e a estação de interesse
     df['distances'] = df.distance(df_station)
 
-    #chamaremos o ponto (dado de satélite) mais próx. da estação real de "estação virtual"
-    df_station_virtual = gpd.GeoDataFrame(df[df['distances'] == min(df['distances'])])
+    #armazenaremos os pontos (dados satélites) mais próximos da estação real
+    #chameremos esses pontos de estações virtuais
+    df.sort_values(by='distances', inplace=True)
+    df_stations_virtual = df[:4]
 
-    return df_station_virtual
+    return df_stations_virtual
 
 
 def find_points_extreme_region(df_region):
@@ -283,7 +285,7 @@ def find_points_extreme_region(df_region):
     
     return [Point((minx, miny)), Point((maxx, maxy))]
 
-def map_stations(shape_region, df_station_real, df_station_virtual, df_prec, name_region='', name_station_real=''):
+def map_stations(shape_region, df_station_real, df_stations_virtual, df_prec, name_region='', name_station_real=''):
 
     #Definindo subplots
     fig, ax = plt.subplots(figsize=(20, 20))
@@ -294,12 +296,12 @@ def map_stations(shape_region, df_station_real, df_station_virtual, df_prec, nam
     #Estação real de interesse
     df_station_real.plot(ax=ax, color='black', linewidth=5)
 
-    # Buscando e plotando algumas estações "virtuais próximas a de interesse"
-    esta_proximas = df_prec[df_prec['distances'] <= 0.15]
-    esta_proximas.plot(ax=ax, color='green', linewidth=5)
+    #Plotando algumas estações "virtuais próximas a de interesse"
+    df_stations_virtual.plot(ax=ax, color='green', linewidth=5)
 
     # "Estação oriunda do satélite" mais próxima da estação real de interesse
-    df_station_virtual.plot(ax=ax, color='blue', linewidth=5)
+    station_virtual = df_stations_virtual[:1]
+    station_virtual.plot(ax=ax, color='blue', linewidth=5)
 
     #Calculando pontos limites da região
     limits_region = find_points_extreme_region(shape_region)
@@ -311,7 +313,6 @@ def map_stations(shape_region, df_station_real, df_station_virtual, df_prec, nam
 
     ax.xaxis.set_tick_params(labelsize=15)
     ax.yaxis.set_tick_params(labelsize=15)
-    
     
     # Definindo texto e legenda
     ax.legend(['Estação ' + name_station_real, 'Estações virtuais no entorno', 'Estação Virtual mais próxima'], fontsize=25)
@@ -333,3 +334,63 @@ def map_stations(shape_region, df_station_real, df_station_virtual, df_prec, nam
     ax.set_ylim(y_min, y_max)
 
     fig.show() 
+
+def organizing_stations(stations_virtual):
+
+    ''' Esta função organiza a ordem na qual as estações devem aparecer na lista: 
+            - Primeira estação: de menor longitude e menor latitude
+            - Segunda estação: de maior longitude e menor latitude
+            - Terceira estação: de menor longitude e maior latitude
+            - Quarta estação: de maior longitude e maior latitude
+        Entrada:
+            - statins_virtual: dataframe resultante da função "find_station_virtual" do módulo 3
+        Saída:
+            - Lista com 4 tuplas de 3 coordenadas (representando cada "estação virtual"), com 
+                [(long, lat, precipitation), ..., (long, lat, precipitation)]
+     '''
+
+    #Organizando (em ordem crescente) os valores de x e de y
+    x_values = np.sort(stations_virtual.geometry.x.unique())
+    y_values = np.sort(stations_virtual.geometry.y.unique())
+
+    #Criando lista para armazenar coordenadas e respectivos valores de precipitação
+    list_stations = []
+
+    #Iternado os valores
+    for y in y_values:
+        for x in x_values:
+            #Apenas gerando coordenadas
+            coord = Point(x, y)
+
+            #Procurando o valor de precipitação para o ponto do satélite 
+            prec = stations_virtual[stations_virtual.geometry == coord].prec.to_list()[0]
+
+            #Apenas armazenando os três valores e adicionando na lista
+            p = (x, y, prec)
+            list_stations.append(p)
+
+    return list_stations
+
+
+def bilinear_interpolation(point, stations):
+    ''' Esta função realiza interpolação bilinear.
+    Entrada:
+        - point: coordenadas (x, y) do ponto que queremos interpolar
+        - stations: lista contendo coordenadas e precipitação das 4 "estações virtuais".
+            esta lista pode ser obtida automaticamente com a função organizing_statins '''
+
+    #Coordenadas dos pontos e seus valores de precipitação
+    x, y = point[0], point[1]
+    x1, y1, f1 = stations[0][0], stations[0][1], stations[0][2]
+    x2, y1, f2 = stations[1][0], stations[1][1], stations[1][2]
+    x1, y2, f3 = stations[2][0], stations[2][1], stations[2][2]
+    x2, y2, f4 = stations[3][0], stations[3][1], stations[3][2]
+
+    #Interpolando no eixo x
+    fR1 = (f1*(x2 - x)/(x2 - x1)) + (f2*(x - x1)/(x2 - x1))
+    fR2 = (f3*(x2 - x)/(x2 - x1)) + (f4*(x - x1)/(x2 - x1))
+
+    #Interpolando em y e em x
+    fp = (fR1*(y2 - y)/(y2 - y1)) + (fR2*(y - y1)/(y2 - y1))
+
+    return fp
