@@ -33,10 +33,10 @@ def month_statistics(df_station, opc=0):
     - ENTRADA: 
         - df_station: dataframe da estação de interesse, gerado pela função "read_station" do módulo 1
         - scale: 
-            0: Acumulado 
-            1: Média
-            2: Máximo
-            3: Mínimo 
+            0: Acumulado de cada mês em cada ano
+            1: Acumulado de um mesmo mês em vários anos
+            2: Média
+            3: Máximo
             4: Calcula tudo e retorna em uma lista '''
 
     #Primeiro, vamos selecionar o acumulado em cada mês de cada ano
@@ -52,17 +52,13 @@ def month_statistics(df_station, opc=0):
     #De forma análoga, para o máximo
     month_max = station_acum_month.groupby(station_acum_month.index.month).max()
 
-    #Para o mínimo, vamos desconsiderar os valores iguais a zero
-    station_acum_month = station_acum_month[station_acum_month['Precipitação (mm)'] != 0]
-    month_min = station_acum_month.groupby(station_acum_month.index.month).min()
-
     #Guardando em uma lista
-    list_statistics = [acum_month, month_mean, month_max, month_min, [acum_month, month_mean, month_max, month_min]]
+    list_statistics = [station_acum_month, acum_month, month_mean, month_max, [station_acum_month, acum_month, month_mean, month_max]]
 
     #Mudando o índice dos dataframes
     new_index = ['Jan', 'Fev', 'Mar', 'Abr', 'Maio', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
-    for df in list_statistics[:4]:
+    for df in list_statistics[1:4]:
         df.index = new_index
 
     return list_statistics[opc]
