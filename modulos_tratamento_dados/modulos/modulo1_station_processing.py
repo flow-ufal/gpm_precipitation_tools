@@ -40,7 +40,7 @@ def read_station(path):
     #latitude sempre está na posição 3 da lista e longitude na posição 5
     lat = float(list_info_header[3])
     long = float(list_info_header[5]) 
-    point_station = [Point(lat, long)]
+    point_station = [Point(long, lat)]
 
     #Excluindo coluna com os índices 
     df.drop(df.columns[0], axis=1, inplace=True)
@@ -100,7 +100,7 @@ def data_availability_station(df, date_1='2000-06-01', date_2='2020-06-30'):
 
     else:
         #indica que o intervalo especificado não está compreendido naquela série histórica
-        falha_range = 'Out_of_range'
+        falha_range = -99
         
     return [falha_full, falha_range]
 
