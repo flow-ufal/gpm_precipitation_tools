@@ -24,7 +24,7 @@ def annual_maximum(filename):
 
 
 # Máxima anual de uma estação
-station = "D:/Pesquisa/PIBIC_23-24/Estacoes/Estacoes_SIGA/DELMIRO_GOUVEIA.xlsx"
+station = "D:\Pesquisa\PIBIC_23-24\Estacoes\Estacoes_SIGA\PÃO DE AÇÚCAR.xlsx"
 station_max = annual_maximum(station)
 
 # Ajustar os dados da chuva máxima anual diária
@@ -135,10 +135,10 @@ df4.plot(ax=ax, x='TR', y='QuantisP', c='purple', label='Gumbel')
 
 ax.set_xlabel('Tempo de Retorno (anos)', weight='bold')
 ax.set_ylabel('Precipitação Máxima (mm)', weight='bold')
-ax.set_title('Distribuições da Chuva', weight='bold')
+ax.set_title('Distribuições da Chuva - Pão de Açucar', weight='bold')
 
-text = fig.text(0.5, 0.5, label_validate, color='lime', ha='center', va='center', size=10)
-text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
+# text = fig.text(0.5, 0.5, label_validate, color='lime', ha='center', va='center', size=10)
+# text.set_path_effects([path_effects.Stroke(linewidth=3, foreground='black'), path_effects.Normal()])
 
 plt.grid(linestyle='-')
 plt.legend()

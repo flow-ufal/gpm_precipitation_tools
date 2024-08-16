@@ -1,6 +1,6 @@
-import pandas as pd
-import geopandas as gpd
 from shapely import Point
+import geopandas as gpd
+import pandas as pd
 
 
 def compatibility_coords(filename_xlsx, encoding, filename, crs):
