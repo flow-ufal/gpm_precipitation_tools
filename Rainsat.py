@@ -41,7 +41,7 @@ class Gpm:
         print("Download completed successfully!")
         return cube
 
-    def to_pandas(self, engine):
+    def to_pandas(self, engine="cfgrib"):
         """
         Create dataframe with precipitation values
 
@@ -64,55 +64,28 @@ class Gpm:
 
         return final_df
 
-    @staticmethod
-    def convert_longitude(dataframe):
-        """
-        Convert range of longitude values for default CRS
 
-        dataframe: Pandas Dataframe with rainfall values
-
-        Returns: Pandas Dataframe with converted longitudes
-        """
-        latitudes = dataframe.index.get_level_values('latitude')
-        longitudes = dataframe.index.get_level_values("longitude")
-        remapped_longitudes = []
-
-        for lon in longitudes:
-            if lon > 180:
-                lon = lon - 360
-                remapped_longitudes.append(lon)
-            else:
-                remapped_longitudes.append(lon)
-
-        dataframe["latitude"] = latitudes
-        dataframe["longitude"] = remapped_longitudes
-        dataframe = dataframe.reset_index(drop=True)
-
-        return dataframe
-
-
-# TEMPORARY EXAMPLES
-# Create object
-_data = Gpm('D:/Pesquisa/PIBIC_23-24/Dados_GPM/Test', '2022-01-01', '2022-01-31')
-
-# Download the data in local machine
-_data.download_data()
-
-# Converts data into a DataFrame
-_df = _data.to_pandas(engine="cfgrib")
-
-# Remapped Longitudes
-_df_formatted = _data.convert_longitude(_df)
-# -----------------------------------------------------------------------------------------------------------#
-
-
-def local_filter(shapefile, epsg):
+def convert_longitude(dataframe):
     """
-    Filter rainfall data for region of interest
+    Convert range of longitude values for default CRS
 
-    shapefile: Shapefile of the region of interest
-    epsg: epsg of the region in geographic coordinates
+    dataframe: Pandas Dataframe with rainfall values
 
-    Returns: DataFrame with rainfall data in region of interest
+    Returns: Pandas Dataframe with converted longitudes
     """
-    return None
+    latitudes = dataframe.index.get_level_values('latitude')
+    longitudes = dataframe.index.get_level_values("longitude")
+    remapped_longitudes = []
+
+    for lon in longitudes:
+        if lon > 180:
+            lon = lon - 360
+            remapped_longitudes.append(lon)
+        else:
+            remapped_longitudes.append(lon)
+
+    dataframe["latitude"] = latitudes
+    dataframe["longitude"] = remapped_longitudes
+    dataframe = dataframe.reset_index(drop=True)
+
+    return dataframe
