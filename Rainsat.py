@@ -1,6 +1,7 @@
 from mergedownloader.inpeparser import INPEParsers, INPETypes
 from mergedownloader.downloader import Downloader
 from shapely import Point
+import geopandas as gpd
 import pandas as pd
 import xarray as xr
 import logging
@@ -41,7 +42,7 @@ class Gpm:
         print("Download completed successfully!")
         return cube
 
-    def to_pandas(self, engine="cfgrib"):
+    def to_pandas(self, engine):
         """
         Create dataframe with precipitation values
 
@@ -89,3 +90,30 @@ def convert_longitude(dataframe):
     dataframe = dataframe.reset_index(drop=True)
 
     return dataframe
+
+
+def local_filter(dataframe, mask_layer, crs_reprojected, crs_geographic):
+    """
+    Clip the data from the mask layer
+
+    dataframe: DataFrame to be clipped
+    mask_layer: mask layer
+    crs_reprojected: CRS in UTM
+    crs_geographic: CRS in lat/long system
+
+    Returns: clipped DataFrame for region of interest
+    """
+    gdf_shp = gpd.read_file(filename=mask_layer)
+    s = gpd.GeoSeries(data=gdf_shp.geometry)
+    s_reprojected = s.to_crs(crs=crs_reprojected)
+    s_buffered = s_reprojected.buffer(distance=15000)
+    s_geographic = s_buffered.to_crs(crs=crs_geographic)
+
+    geometry = [Point(coords) for coords in zip(dataframe["longitude"], dataframe["latitude"])]
+    gdf_rain = gpd.GeoDataFrame(data=dataframe, geometry=geometry)
+
+    gdf_rain.set_crs(crs_geographic, inplace=True)
+    rain_clipped = gpd.clip(gdf=gdf_rain, mask=s_geographic)
+    rain_clipped.reset_index(drop=True, inplace=True)
+
+    return rain_clipped
