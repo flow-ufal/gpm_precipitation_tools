@@ -117,3 +117,23 @@ def local_filter(dataframe, mask_layer, crs_reprojected, crs_geographic):
     rain_clipped.reset_index(drop=True, inplace=True)
 
     return rain_clipped
+
+
+def create_id(dataframe):
+    """
+    Create an ID column for dataframe. The same geometry has same ID and otherwise
+
+    dataframe: The DataFrame from which the ID column is created
+
+    Returns: DataFrame with ID column
+    """
+    dataframe.loc[:, "ID"] = -99
+
+    geom_unique = list(set(dataframe.geometry.values))
+
+    for row in range(len(dataframe)):
+        for i in range(len(geom_unique)):
+            if geom_unique[i] == dataframe.iloc[row]["geometry"]:
+                dataframe.loc[row, "ID"] = i
+
+    return dataframe
